@@ -36,4 +36,12 @@ let templatesCommand = Group {
         // Print each templates set one by one
         templates.forEach { print($0) }
     }
+
+    $0.command("remove",
+        VariadicArgument<String>("name", description: "Name of the templates set to be deleted"),
+        description: "Removes installed templates from Xcode"
+    ) { names in
+        // Remove all sets listed by user
+        try names.forEach { try templatesManager.delete(templatesSet: $0) }
+    }
 }

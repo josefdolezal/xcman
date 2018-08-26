@@ -52,4 +52,21 @@ public final class TemplatesManager {
             // Map to folders name
             .map { $0.lastPathComponent }
     }
+
+    public func delete(templatesSet: String) throws {
+        // URL of templates set being deleted
+        let url = FileManager.default.homeDirectoryUrl.appendingPathComponent(UserDataType.templates.xcodePath(for: templatesSet), isDirectory: true)
+
+        // Throw an error if directory does not exists
+        if !FileManager.default.fileExists(atPath: url.path) {
+            throw UserDataError.couldNotReadRepositoryContent(url)
+        }
+
+        // Remove the directory
+        do {
+            try FileManager.default.removeItem(at: url)
+        } catch {
+            throw UserDataError.couldNotRemoveExistingUserData(url, error)
+        }
+    }
 }
