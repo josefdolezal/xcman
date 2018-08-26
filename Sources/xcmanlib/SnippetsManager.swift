@@ -7,14 +7,15 @@
 
 import Foundation
 
-final class SnippetsManager {
+@available(OSX 10.12, *)
+public final class SnippetsManager {
     // MARK: Properties
 
     private let dataManager: UserDataManager
 
     // MARK: Initializers
 
-    init(cacheUrl: URL) {
+    public init(cacheUrl: URL) {
         let snippetsCacheUrl = cacheUrl.appendingPathComponent("snippets", isDirectory: true)
 
         self.dataManager = UserDataManager(cacheUrl: snippetsCacheUrl, dataType: .snippets)
@@ -22,7 +23,7 @@ final class SnippetsManager {
 
     // MARK: Public API
 
-    func add(repository: GitRepository) throws {
+    public func add(repository: GitRepository) throws {
         try dataManager.add(repository: repository)
     }
 }

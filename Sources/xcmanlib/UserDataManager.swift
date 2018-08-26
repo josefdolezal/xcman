@@ -32,13 +32,14 @@ enum UserDataType: String {
     }
 }
 
-enum UserDataError: Error {
+public enum UserDataError: Error {
     case couldNotCreateUserDataDirectory(URL, Error)
     case couldNotReadRepositoryContent(URL)
     case couldNotRemoveExistingUserData(URL, Error)
     case couldNotInstallUserData(URL, Error)
 }
 
+@available(OSX 10.12, *)
 final class UserDataManager {
     // MARK: Properties
 

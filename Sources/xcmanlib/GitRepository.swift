@@ -7,13 +7,13 @@
 
 import Foundation
 
-struct GitRepository: Codable {
-    var url: URL
-    var name: String
+public struct GitRepository: Codable {
+    public var url: URL
+    public var name: String
 
     private static let githubBaseUrl = URL(string: "https://github.com/")!
 
-    init(url: URL, name: String? = nil) {
+    public init(url: URL, name: String? = nil) {
         // If no explicit name is given, create name from repository name
         let repositoryName = name ?? GitRepository.deriveRepositoryName(from: url)
 
@@ -21,7 +21,7 @@ struct GitRepository: Codable {
         self.name = repositoryName
     }
 
-    init(githubHandle: String, name: String? = nil) {
+    public init(githubHandle: String, name: String? = nil) {
         // Expand github url handle into standard URL
         let url = GitRepository.githubBaseUrl
             .appendingPathComponent(githubHandle)

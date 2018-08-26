@@ -7,14 +7,15 @@
 
 import Foundation
 
-final class TemplatesManager {
+@available(OSX 10.12, *)
+public final class TemplatesManager {
     // MARK: Properties
 
     private let dataManager: UserDataManager
 
     // MARK: Initializers
 
-    init(cacheUrl: URL) {
+    public init(cacheUrl: URL) {
         let templatesCacheUrl = cacheUrl.appendingPathComponent("templates", isDirectory: true)
 
         self.dataManager = UserDataManager(cacheUrl: templatesCacheUrl, dataType: .templates)
@@ -22,7 +23,7 @@ final class TemplatesManager {
 
     // MARK: Public API
 
-    func add(repository: GitRepository) throws {
+    public func add(repository: GitRepository) throws {
         try dataManager.add(repository: repository)
     }
 }
