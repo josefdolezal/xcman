@@ -39,7 +39,6 @@ public enum UserDataError: Error {
     case couldNotInstallUserData(URL, Error)
 }
 
-@available(OSX 10.12, *)
 final class UserDataManager {
     // MARK: Properties
 
@@ -146,6 +145,6 @@ final class UserDataManager {
         // Resolve relative path using repository name as dataset name
         let path = dataType.xcodePath(for: repository.name)
 
-        return fileManager.homeDirectoryForCurrentUser.appendingPathComponent(path, isDirectory: true)
+        return fileManager.homeDirectoryUrl.appendingPathComponent(path, isDirectory: true)
     }
 }

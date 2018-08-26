@@ -7,7 +7,6 @@
 
 import Foundation
 
-@available(OSX 10.12, *)
 public final class SnippetsManager {
     // MARK: Properties
 
