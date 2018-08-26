@@ -10,6 +10,9 @@ import XCManLib
 import Commander
 
 let templatesCommand = Group {
+    // Create shared templates mananger
+    let templatesManager = TemplatesManager(cacheUrl: XCManConfiguration.defaultCacheUrl)
+
     $0.command("install",
         Flag("use-url", default: false, flag: "u", description: "Interprets repository as generic URL instead of GitHub handle"),
         Option("name", default: "", flag: "n", description: "Custom name for Xcode templates group"),
@@ -23,7 +26,14 @@ let templatesCommand = Group {
             ? GitRepository(url: URL(string: repo)!, name: repositoryName)
             : GitRepository(githubHandle: repo, name: repositoryName)
 
-        let templatesManager = TemplatesManager(cacheUrl: XCManConfiguration.defaultCacheUrl)
         try templatesManager.add(repository: repository)
+    }
+
+    $0.command("list", description: "Lists installed templates sets") {
+        // Get list of templates set
+        let templates = try templatesManager.list()
+
+        // Print each templates set one by one
+        templates.forEach { print($0) }
     }
 }
