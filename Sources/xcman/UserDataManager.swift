@@ -12,6 +12,7 @@ enum UserDataType: String {
     case snippets
 
     var identifier: String { return rawValue }
+
     var dataExtension: String {
         switch self {
         case .templates: return "xctemplate"
@@ -19,10 +20,14 @@ enum UserDataType: String {
         }
     }
 
-    var xcodePath: String {
+    func xcodePath(for dataSet: String) -> String {
         switch self {
-        case .templates: return "Library/Developer/Xcode/Templates/File Templates"
-        case .snippets: return "Library/Developer/Xcode/UserData/CodeSnippets"
+        case .templates:
+            // Namespace templates using dataset name
+            return "Library/Developer/Xcode/Templates/File Templates/\(dataSet)"
+        case .snippets:
+            // Snippets does not support structured namespacing, keep hierarchy flat
+            return "Library/Developer/Xcode/UserData/CodeSnippets"
         }
     }
 }
@@ -38,19 +43,17 @@ final class UserDataManager {
     // MARK: Properties
 
     private let fileManager: FileManager
-    private let dataExtension: String
+    private let dataType: UserDataType
 
     private let cacheUrl: URL
-    private let xcodeTemplatesDirectory: URL
 
     // MARK: Initializers
 
     init(cacheUrl: URL, dataType: UserDataType) {
         self.fileManager = FileManager.default
-        self.dataExtension = dataType.dataExtension
+        self.dataType = dataType
 
         self.cacheUrl = cacheUrl
-        self.xcodeTemplatesDirectory = fileManager.homeDirectoryForCurrentUser.appendingPathComponent(dataType.xcodePath, isDirectory: true)
     }
 
     // MARK: Public API
@@ -61,7 +64,7 @@ final class UserDataManager {
         // The url of templates set in local cache
         let cacheTemplatesSet = cacheUrl.appendingPathComponent(templatesSet, isDirectory: true)
         // The url of Xcode templates set
-        let xcodeTemplatesSet = xcodeTemplatesDirectory.appendingPathComponent(templatesSet, isDirectory: true)
+        let xcodeTemplatesSet = xcodeUserDataUrl(for: repository)
 
         do {
             try fileManager.createDirectory(at: cacheUrl, withIntermediateDirectories: true)
@@ -110,7 +113,7 @@ final class UserDataManager {
             // Ignore objects which are not convertible into URL
             .compactMap { $0 as? URL }
             // Filter out non-templates files and directories
-            .filter { $0.pathExtension == dataExtension }
+            .filter { $0.pathExtension == dataType.dataExtension }
 
         // Install each template one by one
         try templates.forEach { try installTemplate($0, into: xcodeSet) }
@@ -136,5 +139,12 @@ final class UserDataManager {
         } catch {
             throw UserDataError.couldNotInstallUserData(xcodeTemplateUrl, error)
         }
+    }
+
+    private func xcodeUserDataUrl(for repository: GitRepository) -> URL {
+        // Resolve relative path using repository name as dataset name
+        let path = dataType.xcodePath(for: repository.name)
+
+        return fileManager.homeDirectoryForCurrentUser.appendingPathComponent(path, isDirectory: true)
     }
 }
