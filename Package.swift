@@ -9,11 +9,13 @@ let package = Package(
         .executable(name: "xcman", targets: ["xcman"]),
         .library(name: "XCManLib", targets: ["XCManLib"])
     ],
-    dependencies: [],
+    dependencies: [
+        .package(url: "https://github.com/kylef/Commander.git", from: "0.8.0")
+    ],
     targets: [
         .target(
             name: "xcman",
-            dependencies: ["XCManLib"]),
+            dependencies: ["XCManLib", "Commander"]),
         .target(
             name: "XCManLib",
             dependencies: [])
